@@ -128,6 +128,7 @@ contract SunperpVault is PausableUpgradeable,StoppableUpgradeable,AccessControlE
     }
 
     function addValidator(ValidatorInfo[] calldata validators) external onlyRole(ADMIN_ROLE) {
+        require(validators.length > 0 && validators.length < 10, "illegal validators length");
         bytes32 validatorHash = keccak256(abi.encode(validators));
         require(availableValidators[validatorHash] == 0, "already set");
         uint totalPower = 0;
@@ -205,11 +206,13 @@ contract SunperpVault is PausableUpgradeable,StoppableUpgradeable,AccessControlE
     }
 
     function withdrawWhitelist(uint256 id, ValidatorInfo[] calldata validators, WithdrawAction calldata action, bytes[] calldata validatorSignatures) external whenNotPaused whenNotStopped onlyRole(OPERATE_ROLE) {
+        require(_supportCurrency(action.token), "currency not support");
         require(whitelist[action.receiver], "addresses not support");
         _withdraw(id, validators, action, validatorSignatures);
     }
 
     function withdraw(uint256 id, ValidatorInfo[] calldata validators, WithdrawAction calldata action, bytes[] calldata validatorSignatures) external whenNotPaused whenNotStopped onlyRole(OPERATE_ROLE) {
+        require(_supportCurrency(action.token), "currency not support");
         if (!checkLimit(action.token, action.amount)) {
             return;
         }
@@ -220,7 +223,6 @@ contract SunperpVault is PausableUpgradeable,StoppableUpgradeable,AccessControlE
     function _withdraw(uint256 id, ValidatorInfo[] calldata validators, WithdrawAction calldata action, bytes[] calldata validatorSignatures) internal {
         require(block.timestamp < action.deadline, "already passed deadline");
         require(withdrawHistory[id] == 0, "already withdraw");
-        require(_supportCurrency(action.token), "currency not support");
         bytes32 digest = keccak256(abi.encode(
             id,
             block.chainid,
