@@ -128,7 +128,7 @@ contract SunperpVault is PausableUpgradeable,StoppableUpgradeable,AccessControlE
     }
 
     function addValidator(ValidatorInfo[] calldata validators) external onlyRole(ADMIN_ROLE) {
-        require(validators.length > 0 && validators.length < 10, "illegal validators length");
+        require(validators.length > 1 && validators.length < 10, "illegal validators length");
         bytes32 validatorHash = keccak256(abi.encode(validators));
         require(availableValidators[validatorHash] == 0, "already set");
         uint totalPower = 0;
