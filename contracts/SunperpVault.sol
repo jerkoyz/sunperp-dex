@@ -3,6 +3,7 @@ pragma solidity 0.8.24;
 
 import "./Address.sol";
 import "./SafeERC20.sol";
+import "./TransferHelper.sol";
 import "./MessageHashUtils.sol";
 import "./SignatureChecker.sol";
 import "./PausableUpgradeable.sol";
@@ -184,7 +185,7 @@ contract SunperpVault is PausableUpgradeable,StoppableUpgradeable,AccessControlE
         } else {
             IERC20 token = IERC20(currency);
             require(token.balanceOf(address(this)) >= amount, "not enough currency balance");
-            token.safeTransfer(to, amount);
+            TransferHelper.safeTransfer(currency, to, amount);
         }
     }
 
