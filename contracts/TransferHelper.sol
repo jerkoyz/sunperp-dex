@@ -23,7 +23,6 @@ library TransferHelper {
         (bool success, bytes memory data) =
                             token.call(abi.encodeWithSelector(IERC20.transfer.selector, to, value));
         if(token == USDTAddr){
-            success = true;
             data = "";
         }
         require(success && (data.length == 0 || abi.decode(data, (bool))), 'TF');
